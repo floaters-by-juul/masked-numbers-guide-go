@@ -1,0 +1,43 @@
+{{ define "default" }}
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Ridesharing Admin</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="" type="text/css"/>
+    <style>
+    table {
+      border-spacing:0;
+    }
+    thead {
+      background: #222;
+      color: #fff;
+    }
+    tr:nth-of-type(2n) {
+      background: #eee;
+    }
+    td,th {
+      padding:0.4em;
+    }
+    td {
+      border-right:1px solid #aaa;
+    }
+    td:last-of-type,th:last-of-type {
+      border-right:none;
+    }
+    td:first-of-type, th:first-of-type {
+      text-align:right;
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+    <h1>Ridesharing Admin</h1>
+    {{ template "yield" . }}
+    <p><small>A sample application brought to you by <a href="https://developers.messagebird.com/">MessageBird</a> :)</small></p>
+    </main>
+  </body>
+</html>
+{{ end }}

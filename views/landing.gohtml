@@ -1,0 +1,104 @@
+{{ define "yield" }}
+
+{{ if .Message }}
+<section id ="error">
+<p><strong>{{ .Message }}</strong></p>
+</section>
+{{ end }}
+
+<section>
+{{ if .ProxyNumbers }}
+
+  <label for="ProxyNumbersTable"><h3>Available Proxy Numbers</h3></label>
+  <table id="ProxyNumbersTable">
+  <thead>
+    <th>ID</th>
+    <th>Phone Number</th>
+  </thead>
+  <tbody>
+    {{ range .ProxyNumbers }}
+    <tr>
+    <td>{{ .ID }}</td>
+    <td>{{ .Number }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+  </table>
+{{ end }}
+
+
+
+<h3>Rides</h3>
+<table>
+<thead>
+<th>ID</th>
+<th>Start</th>
+<th>Destination</th>
+<th>Date and Time</th>
+<th>Customer</th>
+<th>Driver</th>
+<th>Proxy Number</th>
+</thead>
+<tbody>
+{{ if .Rides }}
+  {{ range .Rides }}
+  <tr>
+  <td>{{ .ID }}</td>
+  <td>{{ .Start }}</td>
+  <td>{{ .Destination }}</td>
+  <td>{{ .DateTime }}</td>
+  <td>{{ .ThisCustomer.Name }}</td>
+  <td>{{ .ThisDriver.Name }}</td>
+  <td>{{ .ThisProxyNumber.Number }}</td>
+  </tr>
+  {{ end }}
+{{ else }}
+  <tr><td colspan="7" style="background:#eee;text-align:center">No rides yet</td></tr>
+{{ end }}
+</tbody>
+</table>
+
+
+</section>
+<section>
+<h2>Create a Ride</h2>
+    <form action="/createride" method="post">
+        <div>
+            <label>Customer:</label>
+            <br />
+            <select name="customer">
+              {{ range .Customers }}
+                <option value="{{ .ID }}">{{ .Name }} ({{ .Number }})</option>
+              {{ end }}
+            </select>
+        </div>
+        <div>
+            <label>Driver:</label>
+            <br />
+            <select name="driver">
+              {{ range .Drivers }}
+                <option value="{{ .ID }}">{{ .Name }} ({{ .Number }})</option>
+              {{ end }}
+            </select>
+        </div>
+        <div>
+            <label>Start (location):</label>
+            <br />
+            <input type="text" name="start" />
+        </div>
+        <div>
+            <label>Destination (location):</label>
+            <br />
+            <input type="text" name="destination" />
+        </div>
+        <div>
+            <label>Date and Time:</label>
+            <br />
+            <input type="text" name="datetime" />
+        </div>
+        <div>
+            <input type="submit" value="Create Ride" />
+        </div>
+    </form>
+</section>
+{{ end }}
