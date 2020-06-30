@@ -53,9 +53,7 @@ func getAvailableProxyNumber(dbdata *RideSharingDB, customerID int, driverID int
 	// These sets must be unique in order for our number masking system to work
 	var rideProxySets [][]int
 	for _, v1 := range dbdata.Rides {
-		for _, v := range v1.NumGrp {
-			rideProxySets = append(rideProxySets, v)
-		}
+		rideProxySets = append(rideProxySets, v1.NumGrp...)
 	}
 
 	// Once we have a list of all proxy sets that exist,

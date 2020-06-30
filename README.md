@@ -22,7 +22,7 @@ to a proxy phone number, which then relays the call or message to the party
 meant to receive it.
 
 In this MessageBird Developer Guide, we'll show you how to build a proxy system in Go to mask phone
-numbers for our ficticious ridesharing platform, BirdCar.
+numbers for our fictitious ridesharing platform, BirdCar.
 
 ## Getting Started
 
