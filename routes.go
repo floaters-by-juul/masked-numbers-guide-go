@@ -12,7 +12,6 @@ import (
 // landing handler is the default view
 // loads database int dbdata struct and displays the default view
 func landing(dbdata *RideSharingDB) http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := dbdata.loadDB()
 		if err != nil {
@@ -21,7 +20,6 @@ func landing(dbdata *RideSharingDB) http.HandlerFunc {
 			return
 		}
 		renderDefaultTemplate(w, "views/landing.gohtml", dbdata)
-		return
 	}
 }
 
@@ -43,7 +41,11 @@ func createRideHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Handl
 		}
 
 		if r.Method == "POST" {
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(w, "Error parsing the form submitted. error: %v", err)
+				return
+			}
 			customerID := r.FormValue("customer")
 			driverID := r.FormValue("driver")
 			startLocation := r.FormValue("start")
@@ -53,9 +55,14 @@ func createRideHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Handl
 			// Convert ids from form values to ints which are used in our data model
 			// Also to prepare to send SMS notifications to customer and driver for new ride
 			customerIDint, err := strconv.Atoi(customerID)
+			if err != nil {
+				dbdata.Message = fmt.Sprintf("Something went wrong. Invalid Customer id: %v", err)
+				renderDefaultTemplate(w, "views/landing.gohtml", dbdata)
+				return
+			}
 			driverIDint, err := strconv.Atoi(driverID)
 			if err != nil {
-				dbdata.Message = fmt.Sprintf("Something went wrong: %v", err)
+				dbdata.Message = fmt.Sprintf("Something went wrong. Invalid Driver id: %v", err)
 				renderDefaultTemplate(w, "views/landing.gohtml", dbdata)
 				return
 			}
@@ -111,7 +118,6 @@ func createRideHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Handl
 		}
 
 		renderDefaultTemplate(w, "views/landing.gohtml", dbdata)
-		return
 	}
 }
 
@@ -139,7 +145,11 @@ func messageHookHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Hand
 
 		if r.Method == "POST" {
 			// Read response from MessageBird REST API servers
-			r.ParseForm()
+			if err := r.ParseForm(); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprintf(w, "Error parsing the form submitted. error: %v", err)
+				return
+			}
 			originator := r.FormValue("originator")
 			receiver := r.FormValue("receiver")
 			payload := r.FormValue("payload")
@@ -178,7 +188,6 @@ func messageHookHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Hand
 			}
 			// Return any response, MessageBird won't parse this
 			fmt.Fprint(w, "OK")
-			return
 		}
 	}
 }
@@ -208,7 +217,11 @@ func voiceHookHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Handle
 			return
 		}
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Error parsing the form submitted. error: %v", err)
+			return
+		}
 		proxyNumber := r.FormValue("destination")
 		caller := r.FormValue("source")
 
@@ -243,6 +256,5 @@ func voiceHookHandler(dbdata *RideSharingDB, mb *messagebird.Client) http.Handle
 		// If we get to this point, assume all is in order and attempt to transfer the call
 		log.Println("Transferring call to ", forwardToThisNumber)
 		fmt.Fprintf(w, "<?xml version='1.0' encoding='UTF-8'?><Transfer destination='%s' make='true' />", forwardToThisNumber)
-		return
 	}
 }
